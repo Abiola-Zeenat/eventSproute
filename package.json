@@ -1,0 +1,23 @@
+{
+  "name": "eventsproute",
+  "version": "1.0.0",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app",
+    "dev": "node --watch --env-file=.env app"
+  },
+  "keywords": [],
+  "author": "Abiola Abdulsalam",
+  "license": "ISC",
+  "description": "An event management system",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "colors": "^1.4.0",
+    "express": "^4.21.1",
+    "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.8.2"
+  }
+}
