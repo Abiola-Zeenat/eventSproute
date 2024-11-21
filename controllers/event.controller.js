@@ -1,7 +1,4 @@
-// Email Notifications:
-// Send email to users about an event:
-// POST /api/events/:id/notify
-// Sends an email to all registered users about the event.
+
 import Event from "../model/event.model.js";
 import nodemailer from "nodemailer";
 import User from "../model/user.model.js";

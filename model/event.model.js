@@ -1,12 +1,5 @@
 import { Schema, model, Types } from "mongoose";
 
-/*
-title (string, required)
-description (string)
-date (date, required)
-createdBy (user ID of the event organizer)
-
-*/
 const EventSchema = Schema(
   {
     title: { type: String, required: true },

@@ -1,7 +1,3 @@
-// Email Notifications:
-// Send email to users about an event:
-// POST /api/events/:id/notify
-// Sends an email to all registered users about the event.
 import express from "express";
 import {
   createEvent,
