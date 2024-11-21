@@ -1,4 +1,3 @@
-
 import Event from "../model/event.model.js";
 import nodemailer from "nodemailer";
 import User from "../model/user.model.js";
@@ -42,11 +41,25 @@ const createEvent = async (req, res) => {
  */
 const getEvents = async (req, res) => {
   try {
-    const events = await Event.find({});
+    const { page = 1, limit = 10 } = req.query;
+    const startIndex = (page - 1) * limit;
+
+    const events = await Event.find()
+      .skip(startIndex) // Skip the previous pages
+      .limit(parseInt(limit)) // Limit the number of results per page
+      .exec();
+
+    const total = await Event.countDocuments(); // Total number of events
+
     res.status(200).json({
       success: true,
       message: "All Events fetched successfully",
       data: events,
+      pagination: {
+        currentPage: parseInt(page),
+        totalPages: Math.ceil(total / limit),
+        totalItems: total,
+      },
     });
   } catch (error) {
     res.status(500).json({
