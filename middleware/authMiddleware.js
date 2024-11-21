@@ -3,9 +3,9 @@ import User from "../model/user.model.js";
 
 // Protect route
 export const protect = async (req, res, next) => {
-  let { accessToken } = req.cookies;
+  const token = req.headers.authorization.split(" ")[1];
 
-  if (!accessToken) {
+  if (!token) {
     return res.status(401).json({
       success: false,
       message: "Unauthorized to access this route",
@@ -13,7 +13,8 @@ export const protect = async (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(accessToken, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
     req.user = await User.findById(decoded._id).select("-password");
 
     next();
@@ -21,6 +22,17 @@ export const protect = async (req, res, next) => {
     return res.status(401).json({
       success: false,
       message: `Not Authorized to access this route: ${error.message}`,
+    });
+  }
+};
+
+export const organizer = async (req, res, next) => {
+  if (req.user && req.user.role === "organizer") {
+    next();
+  } else {
+    res.status(403).json({
+      success: false,
+      message: "only Organizer can access this route",
     });
   }
 };

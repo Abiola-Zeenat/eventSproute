@@ -10,7 +10,7 @@ export const signupSchema = Joi.object().keys({
     .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
     .required(),
   password: Joi.string().pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")).required(),
-  role: Joi.string().valid("user", "admin", "organiser").default("user"),
+  role: Joi.string().valid("user", "admin", "organizer").default("user"),
 });
 
 export const loginSchema = Joi.object().keys({
@@ -21,5 +21,5 @@ export const loginSchema = Joi.object().keys({
 });
 
 export const updateSchema = Joi.object().keys({
-  role: Joi.string().valid("user", "admin", "organiser").required(),
+  role: Joi.string().valid("user", "admin", "organizer").required(),
 });

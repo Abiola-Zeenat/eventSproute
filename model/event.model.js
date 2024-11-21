@@ -1,4 +1,4 @@
-import { Schema, Types } from "mongoose";
+import { Schema, model, Types } from "mongoose";
 
 /*
 title (string, required)
