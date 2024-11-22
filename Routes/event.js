@@ -6,6 +6,7 @@ import {
   getEvents,
   sendEmail,
   updateEvent,
+  uploadBanner,
 } from "../controllers/event.controller.js";
 import { protect, organizer } from "../middleware/authMiddleware.js";
 import validate from "../middleware/validateMiddleware.js";
@@ -13,6 +14,7 @@ import {
   createEventSchema,
   updateEventSchema,
 } from "../middleware/validateEvent.js";
+import upload from "../lib/upload.js";
 const router = express.Router();
 
 router.post(
@@ -20,6 +22,12 @@ router.post(
   [protect, organizer],
   validate(createEventSchema),
   createEvent
+);
+router.post(
+  "/upload",
+  [protect, organizer],
+  upload.single("banner"),
+  uploadBanner
 );
 router.get("/", getEvents);
 router.get("/:id", getEvent);

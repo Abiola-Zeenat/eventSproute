@@ -3,11 +3,32 @@ import nodemailer from "nodemailer";
 import User from "../model/user.model.js";
 
 /**
+ * @desc upload an event banner
+ * @Route POST /api/events/upload
+ * @Access private, organizer only
+ */
+const uploadBanner = async (req, res) => {
+  try {
+    // Handle the uploaded file
+    const filePath = req.file.path; // Path to the uploaded file
+    res.status(200).json({
+      success: true,
+      message: "File uploaded successfully!",
+      file: filePath,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: `Error uploading an event banner: ${error.message}`,
+    });
+  }
+};
+
+/**
  * @desc Create an event
  * @Route POST /api/events
  * @Access private, organizer only
  */
-
 const createEvent = async (req, res) => {
   try {
     const { title, description, date } = req.body;
@@ -230,4 +251,5 @@ export {
   updateEvent,
   deleteEvent,
   sendEmail,
+  uploadBanner,
 };

@@ -3,7 +3,8 @@ import User from "../model/user.model.js";
 
 // Protect route
 export const protect = async (req, res, next) => {
-  const token = req.headers.authorization.split(" ")[1];
+  const token =
+    req.headers.authorization.split(" ")[1] || req.cookies.accessToken;
 
   if (!token) {
     return res.status(401).json({
