@@ -1,6 +1,10 @@
 import Event from "../model/event.model.js";
 import nodemailer from "nodemailer";
 import User from "../model/user.model.js";
+import {
+  validateCreateEvent,
+  validateUpdateEvent,
+} from "../validation/validateEvent.js";
 
 /**
  * @desc upload an event banner
@@ -10,11 +14,11 @@ import User from "../model/user.model.js";
 const uploadBanner = async (req, res) => {
   try {
     // Handle the uploaded file
-    const filePath = req.file.path; // Path to the uploaded file
+    const imgURL = req.file.path; // Path to the uploaded file
     res.status(200).json({
       success: true,
-      message: "File uploaded successfully!",
-      file: filePath,
+      message: "banner uploaded successfully!",
+      file: imgURL,
     });
   } catch (error) {
     res.status(500).json({
@@ -32,6 +36,12 @@ const uploadBanner = async (req, res) => {
 const createEvent = async (req, res) => {
   try {
     const { title, description, date } = req.body;
+    const { error } = validateCreateEvent(req.body);
+    if (error)
+      return res.status(400).json({
+        success: false,
+        message: error.details[0].message,
+      });
     const eventExists = await Event.findOne({ title });
     if (eventExists)
       return res.status(400).json({ message: "Event already created" });
@@ -126,6 +136,12 @@ const getEvent = async (req, res) => {
 const updateEvent = async (req, res) => {
   try {
     const { id } = req.params;
+    const { error } = validateUpdateEvent(req.body);
+    if (error)
+      return res.status(400).json({
+        success: false,
+        message: error.details[0].message,
+      });
 
     const event = await Event.findById(id);
     if (!event)

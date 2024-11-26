@@ -27,24 +27,16 @@ export const protect = async (req, res, next) => {
   }
 };
 
-export const organizer = async (req, res, next) => {
-  if (req.user && req.user.role === "organizer") {
+export const authorize = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({
+        success: false,
+        message: `Access denied. Only ${allowedRoles.join(
+          " or "
+        )} can access this route.`,
+      });
+    }
     next();
-  } else {
-    res.status(403).json({
-      success: false,
-      message: "only Organizer can access this route",
-    });
-  }
-};
-
-export const admin = async (req, res, next) => {
-  if (req.user && req.user.role === "admin") {
-    next();
-  } else {
-    res.status(403).json({
-      success: false,
-      message: "only Admin can access this route",
-    });
-  }
+  };
 };

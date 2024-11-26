@@ -1,4 +1,5 @@
 import User from "../model/user.model.js";
+import { validateUpdateRole } from "../validation/validateUser.js";
 
 /**
  * @desc Get all users
@@ -33,6 +34,12 @@ const updateUserRole = async (req, res) => {
   try {
     const { id } = req.params;
     const { role } = req.body;
+    const { error } = validateUpdateRole(role);
+    if (error)
+      return res.status(400).json({
+        success: false,
+        message: error.details[0].message,
+      });
 
     const user = await User.findById(id).select("-password");
 

@@ -5,6 +5,7 @@ import {
   genToken,
   setCookie,
 } from "../lib/auth.js";
+import { validateLogin, validateSignup } from "../validation/validateUser.js";
 
 /**
  * @desc Register a user
@@ -15,6 +16,12 @@ import {
 const registerUser = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
+    const { error } = validateSignup(req.body);
+    if (error)
+      return res.status(400).json({
+        success: false,
+        message: error.details[0].message,
+      });
 
     const userExists = await User.findOne({ email });
     if (userExists) {
@@ -55,6 +62,12 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
+    const { error } = validateLogin(req.body);
+    if (error)
+      return res.status(400).json({
+        success: false,
+        message: error.details[0].message,
+      });
 
     const user = await User.findOne({ email });
 

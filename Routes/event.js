@@ -8,24 +8,19 @@ import {
   updateEvent,
   uploadBanner,
 } from "../controllers/event.controller.js";
-import { protect, organizer } from "../middleware/authMiddleware.js";
-import validate from "../middleware/validateMiddleware.js";
-import {
-  createEventSchema,
-  updateEventSchema,
-} from "../middleware/validateEvent.js";
+import { protect, authorize } from "../middleware/authMiddleware.js";
+
 import upload from "../lib/upload.js";
 const router = express.Router();
 
 router.post(
   "/",
-  [protect, organizer],
-  validate(createEventSchema),
+  [protect, authorize("organizer")],
   createEvent
 );
 router.post(
   "/upload",
-  [protect, organizer],
+  [protect, authorize("organizer")],
   upload.single("banner"),
   uploadBanner
 );
@@ -33,9 +28,8 @@ router.get("/", getEvents);
 router.get("/:id", getEvent);
 router.put(
   "/:id",
-  validate(updateEventSchema),
   protect,
-  organizer,
+  authorize("organizer"),
   updateEvent
 );
 router.delete("/:id", protect, deleteEvent);
