@@ -13,7 +13,7 @@ import { validateLogin, validateSignup } from "../validation/validateUser.js";
  * @Access Public
  */
 
-const registerUser = async (req, res) => {
+const registerUser = async (req, res, next) => {
   try {
     const { name, email, password, role } = req.body;
     const { error } = validateSignup(req.body);
@@ -25,9 +25,7 @@ const registerUser = async (req, res) => {
 
     const userExists = await User.findOne({ email });
     if (userExists) {
-      return res.status(400).json({
-        message: "user already exist",
-      });
+      throw { status: 400, message: "user already exist" };
     }
     const hashedPassword = await hashPassword(password);
     const user = await User.create({
@@ -47,10 +45,7 @@ const registerUser = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 
@@ -59,7 +54,7 @@ const registerUser = async (req, res) => {
  * @Route POST /api/auth/login
  * @Access Public
  */
-const loginUser = async (req, res) => {
+const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const { error } = validateLogin(req.body);
@@ -72,12 +67,12 @@ const loginUser = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(400).json({ message: `Invalid email or password` });
+      throw { status: 400, message: "Invalid email or password" };
     }
 
     const isPasswordMatch = await comparePassword(password, user.password);
     if (!isPasswordMatch) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      throw { status: 400, message: "Invalid credentials" };
     }
 
     const accessToken = genToken({
@@ -99,10 +94,7 @@ const loginUser = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 

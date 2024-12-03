@@ -35,5 +35,5 @@ export const validateUpdateRole = (role) => {
   const schema = Joi.object().keys({
     role: Joi.string().valid("user", "admin", "organizer").required(),
   });
-return schema.validate(role);
-} 
+  return schema.validate(role);
+};

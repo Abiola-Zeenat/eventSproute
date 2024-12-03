@@ -6,10 +6,6 @@ const router = express.Router();
 
 router.get("/", [protect, authorize("admin")], getUsers);
 
-router.post(
-  "/:id/role",
-  [protect, authorize("admin")],
-  updateUserRole
-);
+router.put("/:id/role", [protect, authorize("admin")], updateUserRole);
 
 export default router;

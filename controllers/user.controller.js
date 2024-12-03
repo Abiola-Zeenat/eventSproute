@@ -7,7 +7,7 @@ import { validateUpdateRole } from "../validation/validateUser.js";
  * @Access Private, admin only
  */
 
-const getUsers = async (req, res) => {
+const getUsers = async (req, res, next) => {
   try {
     const users = await User.find().select("-password");
 
@@ -17,10 +17,7 @@ const getUsers = async (req, res) => {
       data: users,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 
@@ -30,38 +27,28 @@ const getUsers = async (req, res) => {
  * @Access Private -admin only
  */
 
-const updateUserRole = async (req, res) => {
+const updateUserRole = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { role } = req.body;
-    const { error } = validateUpdateRole(role);
-    if (error)
-      return res.status(400).json({
-        success: false,
-        message: error.details[0].message,
-      });
-
+    const { error } = validateUpdateRole({ role });
+    if (error) throw { status: 400, message: error.details[0].message };
+   
     const user = await User.findById(id).select("-password");
 
     if (!user) {
-      return res
-        .status(404)
-        .json({ message: `The user with id of ${id} was not found` });
+      throw { status: 404, message: `The user with id of ${id} was not found` };
     }
-    if (role) {
-      user.role = role;
-      await user.save();
-      res.status(201).json({
-        success: true,
-        message: "User Updated Successfully",
-        data: user,
-      });
-    }
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
+
+    user.role = role;
+    const updatedUser = await user.save();
+    res.status(201).json({
+      success: true,
+      message: "User Updated Successfully",
+      data: updatedUser,
     });
+  } catch (error) {
+    next(error);
   }
 };
 

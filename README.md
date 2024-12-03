@@ -1,4 +1,4 @@
-# EventsPro API Documentation
+# Eventsproute API Documentation
 
 **Description:** A RESTful API for managing events and users with email notifications and Role-Based Access Control (RBAC).
 
@@ -47,7 +47,7 @@
 
 ### 2. Update User Role
 
-- **Endpoint:** `POST /users/:userId/role`
+- **Endpoint:** `PUT /users/:userId/role`
 - **Description:** Update a user's role
 - **Authentication:** Required (Bearer Token)
 - **Allowed Roles:** Admin

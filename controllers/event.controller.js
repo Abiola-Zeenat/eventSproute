@@ -21,10 +21,9 @@ const uploadBanner = async (req, res) => {
       file: imgURL,
     });
   } catch (error) {
-    res.status(500).json({
-      status: false,
+    throw {
       message: `Error uploading an event banner: ${error.message}`,
-    });
+    };
   }
 };
 
@@ -38,13 +37,12 @@ const createEvent = async (req, res) => {
     const { title, description, date } = req.body;
     const { error } = validateCreateEvent(req.body);
     if (error)
-      return res.status(400).json({
-        success: false,
+      throw {
+        status: 400,
         message: error.details[0].message,
-      });
+      };
     const eventExists = await Event.findOne({ title });
-    if (eventExists)
-      return res.status(400).json({ message: "Event already created" });
+    if (eventExists) throw { status: 400, message: "Event already created" };
 
     const createdEvent = await Event.create({
       title,
@@ -58,10 +56,9 @@ const createEvent = async (req, res) => {
       data: createdEvent,
     });
   } catch (error) {
-    res.status(500).json({
-      status: false,
+    throw {
       message: `Error creating an event : ${error.message}`,
-    });
+    };
   }
 };
 
@@ -93,10 +90,9 @@ const getEvents = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
+    throw {
       message: `Error fetching all events : ${error.message}`,
-    });
+    };
   }
 };
 
@@ -111,9 +107,10 @@ const getEvent = async (req, res) => {
 
     const event = await Event.findById(id);
     if (!event)
-      return res
-        .status(404)
-        .json({ message: `The event with the ID ${id} was not found` });
+      throw {
+        status: 404,
+        message: `The event with the ID ${id} was not found`,
+      };
 
     res.status(200).json({
       success: true,
@@ -121,10 +118,7 @@ const getEvent = async (req, res) => {
       data: event,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: `Error fetching event : ${error.message}`,
-    });
+    throw { message: `Error fetching event : ${error.message}` };
   }
 };
 
@@ -145,9 +139,10 @@ const updateEvent = async (req, res) => {
 
     const event = await Event.findById(id);
     if (!event)
-      return res
-        .status(404)
-        .json({ message: `The event with the ID ${id} was not found` });
+      throw {
+        status: 404,
+        message: `The event with the ID ${id} was not found`,
+      };
 
     if (req.user._id.toString() === event.createdBy.toString()) {
       const updatedEvent = await Event.findByIdAndUpdate(id, req.body, {
@@ -160,14 +155,14 @@ const updateEvent = async (req, res) => {
         data: updatedEvent,
       });
     } else
-      res.status(403).json({
+      throw {
+        staus: 403,
         message: "Only the organizer is allowed to update the event.",
-      });
+      };
   } catch (error) {
-    res.status(500).json({
-      success: false,
+    throw {
       message: `Error updating event : ${error.message}`,
-    });
+    };
   }
 };
 
@@ -183,9 +178,7 @@ const deleteEvent = async (req, res) => {
     const event = await Event.findById(id);
 
     if (!event)
-      return res
-        .status(404)
-        .json({ message: `The event with the ID ${id} was not found` });
+     throw {status: 404, message: `The event with the ID ${id} was not found` };
 
     if (
       req.user.role === "admin" ||
@@ -198,12 +191,11 @@ const deleteEvent = async (req, res) => {
         message: " Event deleted successfully",
       });
     } else
-      res.status(403).json({ message: "not authorized to delete the event." });
+      throw{status:403, message: "not authorized to delete the event." };
   } catch (error) {
-    res.status(500).json({
-      success: false,
+    throw{
       message: `Error updating event : ${error.message}`,
-    });
+    };
   }
 };
 
@@ -218,9 +210,7 @@ const sendEmail = async (req, res) => {
     const event = await Event.findById(id, "title date");
     console.log(event);
     if (!event)
-      return res
-        .status(404)
-        .json({ message: `The event with the ID ${id} was not found` });
+      throw {status: 404, message: `The event with the ID ${id} was not found` };
 
     const users = await User.find({}, "email"); // Fetch only the 'email' field
     const emailList = users.map((user) => user.email).join(",");
@@ -240,7 +230,7 @@ const sendEmail = async (req, res) => {
       to: emailList, // list of receivers
       subject: "Event Notification", // Subject line
       text: `This is to notify you of the event, ${event.title} that will be coming up on ${event.date}`, // plain text body
-      // html: "<b>Hello world?</b>", // html body
+   
     });
 
     console.log("Message sent: %s", info.messageId);
@@ -253,10 +243,9 @@ const sendEmail = async (req, res) => {
       data: event,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
+    throw{
       message: `Error sending mail : ${error.message}`,
-    });
+    };
   }
 };
 

@@ -6,6 +6,7 @@ import userRouter from "./Routes/user.js";
 import eventRouter from "./Routes/event.js";
 import cookieParser from "cookie-parser";
 import logger from "./middleware/logger.js";
+import { notFound, errorHandler } from "./middleware/error.js";
 
 const app = express();
 
@@ -20,6 +21,10 @@ app.use(logger);
 app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
 app.use("/api/events", eventRouter);
+
+// error middleware
+app.use(notFound);
+app.use(errorHandler);
 
 // database
 connectDB();
